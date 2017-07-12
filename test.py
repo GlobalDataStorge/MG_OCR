@@ -1,6 +1,8 @@
+# coding=utf-8
+import fetchpic_from_baidu as fetch
+
 print "fuck.."
 
-a = [1, 2, 3]
-for i, m in enumerate(a):
-    print i, m
-
+p = fetch.downloadFromBaidu("金毛", 30, (128, 128))
+p.close()
+p.join()

@@ -1,29 +1,31 @@
-#coding: utf-8
+# coding: utf-8
 import urllib2
 import json
 import multiprocessing
 import datetime
 from multiprocessing import Pool
-searchUrl = "http://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&queryWord={keyword}&cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=&z=&ic=&word={keyword}&s=&se=&tab=&width=&height=&face=&istype=&qc=&nc=1&fr=&pn={pageNum}&rn=30"#&gsm=b4&1499849456929="
+
+searchUrl = "http://image.baidu.com/search/acjson?tn=resultjson_com&ipn=rj&ct=201326592&is=&fp=result&queryWord={keyword}&cl=2&lm=-1&ie=utf-8&oe=utf-8&adpicid=&st=&z=&ic=&word={keyword}&s=&se=&tab=&width=&height=&face=&istype=&qc=&nc=1&fr=&pn={pageNum}&rn=30"  # &gsm=b4&1499849456929="
 
 pool = Pool(20)
-size = (128,128)
+size = (128, 128)
 
 send_headers = {
-       'Host': 'img5.imgtn.bdimg.com',
-       'Connection': 'keep-alive',
-        'Cache-Control': 'max-age=0',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
-        'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT',
-        'Referer': 'img5.imgtn.bdimg.com/it/',
-        'X-Requested-With': 'XMLHttpRequest'
-   }
+    'Host': 'img5.imgtn.bdimg.com',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
+    'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT',
+    'Referer': 'img5.imgtn.bdimg.com/it/',
+    'X-Requested-With': 'XMLHttpRequest'
+}
 
-def resize(b_data,name,size = (128,128)):
+
+def resize(b_data, name, size=(128, 128)):
     from PIL import Image
     import cStringIO as StringIO
     try:
@@ -45,19 +47,22 @@ def download(data):
             raw = resp.read()
             import hashlib
             global size
-            resize(raw,"image/" + str(hashlib.md5(data['thumbURL']).hexdigest()) + ".jpg",size)
-        except Exception,e:
+            resize(raw, "image/" + str(hashlib.md5(data['thumbURL']).hexdigest()) + ".jpg", size)
+        except Exception, e:
             pass
             # print "url"
             # print data['thumbURL']
             # print e
 
+
 pool = Pool(4)
-def downloadFromBaidu(keyworld,num,sz):
+
+
+def downloadFromBaidu(keyworld, num, sz):
     pages = num / 30 + 1
     global size
     size = sz
-    for i in range(0,pages):
+    for i in range(0, pages):
         response = urllib2.urlopen(searchUrl.format(keyword=keyworld, pageNum=i * 30), timeout=10)
         data = response.read()
         obj = json.loads(data)
@@ -66,8 +71,9 @@ def downloadFromBaidu(keyworld,num,sz):
         pool.map_async(download, obj['data'])
     return pool
 
+
 if __name__ == "__main__":
-    p = downloadFromBaidu('搭配',500,(128,128))
+    p = downloadFromBaidu('搭配', 500, (128, 128))
     p.close()
     p.join()
 
@@ -88,6 +94,3 @@ if __name__ == "__main__":
 
 
     # print urllib2.urlopen("http://www.baidu.com").read()
-
-
-
