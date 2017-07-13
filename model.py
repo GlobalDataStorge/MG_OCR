@@ -20,29 +20,29 @@ def max_pool(x, ksize, strides):
     return tf.nn.max_pool(x, ksize, strides, padding="SAME")
 
 
-def inference(images):
+def inference(images, n_classes):
+    tf.summary.image("images", images)
     images_stream = images
     conv_layer = [32, 64]
-    current_layer = images[3]
+    current_layer = int(images.get_shape()[3])
     for next_conv_layer in conv_layer:
         W_conv = weight_variables([3, 3, current_layer, next_conv_layer])
         b_conv = biases_variables([next_conv_layer])
-        h_conv = conv2d(images, W_conv, b_conv, [1, 1, 1, 1])
+        h_conv = conv2d(images_stream, W_conv, b_conv, [1, 1, 1, 1])
         images_stream = max_pool(h_conv, [1, 2, 2, 1], [1, 2, 2, 1])
         current_layer = next_conv_layer
 
-    images_stream = tf.reshape(images_stream, [images[0], -1])
-    current_input_num = images_stream.get_shape()[-1]
-    fc_layer = [256, 512, 512]
+    batch_size = int(images.get_shape()[0])
+    images_stream = tf.reshape(images_stream, [batch_size, -1])
+    current_input_num = int(images_stream.get_shape()[-1])
+    fc_layer = [256, 512, 512, n_classes]
     for i, next_fc_layer in enumerate(fc_layer):
         W_fc = weight_variables([current_input_num, next_fc_layer])
+        current_input_num = next_fc_layer
         b_fc = biases_variables([next_fc_layer])
         images_stream = tf.add(tf.matmul(images_stream, W_fc), b_fc)
-        if i == len(fc_layer) - 1:
-            images_stream = tf.nn.softmax(images_stream)
-        else:
+        if i != len(fc_layer) - 1:
             images_stream = tf.nn.relu(images_stream)
-
     return images_stream
 
 
@@ -54,7 +54,10 @@ def accuracy(logits, label):
 
 
 def loss(logits, labels):
-    return tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits)
+    cross_entropy =  tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels, logits=logits)
+    loss = tf.reduce_mean(cross_entropy, name="loss")
+    tf.summary.scalar("loss", loss)
+    return loss
 
 
 def train(loss, learning_rate):

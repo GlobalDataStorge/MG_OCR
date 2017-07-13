@@ -42,12 +42,15 @@ def download(data):
     # resp = urllib2.urlopen("http://img5.imgtn.bdimg.com/it/u=2618620045,2641964444&fm=26&gp=0.jpg")
     if data.has_key('thumbURL'):
         try:
-            req = urllib2.Request(data['thumbURL'], headers=send_headers)
+            url = data['thumbURL']
+            req = urllib2.Request(url, headers=send_headers)
             resp = urllib2.urlopen(req)
             raw = resp.read()
             import hashlib
             global size
-            resize(raw, "image/" + str(hashlib.md5(data['thumbURL']).hexdigest()) + ".jpg", size)
+            filename = url.split("/")[-1]
+            # resize(raw, "image/" + str(hashlib.md5(url).hexdigest()) + "_" + filename, size)
+            resize(raw, "image/" + filename, size)
         except Exception, e:
             pass
             # print "url"
@@ -65,15 +68,19 @@ def downloadFromBaidu(keyworld, num, sz):
     for i in range(0, pages):
         response = urllib2.urlopen(searchUrl.format(keyword=keyworld, pageNum=i * 30), timeout=10)
         data = response.read()
-        obj = json.loads(data)
+        try:
+        # data = urllib2.unquote(data)
+            obj = json.loads(data)
 
-        global pool
-        pool.map_async(download, obj['data'])
+            global pool
+            pool.map_async(download, obj['data'])
+        except Exception,e:
+            print e
     return pool
 
 
 if __name__ == "__main__":
-    p = downloadFromBaidu('搭配', 500, (128, 128))
+    p = downloadFromBaidu('穿衣搭配', 50000, (128, 128))
     p.close()
     p.join()
 
