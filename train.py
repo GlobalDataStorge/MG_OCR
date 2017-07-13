@@ -21,7 +21,7 @@ if __name__ == '__main__':
     train_batch_images, train_batch_labels = image_reader.get_train_batch(
         PATH_TRAIN, IMAGE_WIDTH, IMAGE_HEIGHT, BATCH_SIZE)
 
-    logits = model.inference(train_batch_images, 4)
+    logits = model.inference(train_batch_images, 4, 0.75)
     loss = model.loss(logits, train_batch_labels)
     # accuracy = model.accuracy(model.inference(test_batch_images, 4), test_batch_labels)
     accuracy = model.accuracy(logits, train_batch_labels)

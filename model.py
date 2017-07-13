@@ -20,7 +20,7 @@ def max_pool(x, ksize, strides):
     return tf.nn.max_pool(x, ksize, strides, padding="SAME")
 
 
-def inference(images, n_classes):
+def inference(images, n_classes, keep_prob):
     tf.summary.image("images", images)
     images_stream = images
     conv_layer = [32, 64]
@@ -43,6 +43,7 @@ def inference(images, n_classes):
         images_stream = tf.add(tf.matmul(images_stream, W_fc), b_fc)
         if i != len(fc_layer) - 1:
             images_stream = tf.nn.relu(images_stream)
+            images_stream = tf.nn.dropout(images_stream, keep_prob)
     return images_stream
 
 

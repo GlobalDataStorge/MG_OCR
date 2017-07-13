@@ -11,14 +11,12 @@ PATH_EVAL = "data/test"
 PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
 
-IMAGE_WIDTH = 100
-IMAGE_HEIGHT = 100
 BATCH_SIZE = 20
 
 if __name__ == '__main__':
     test_batch_images, test_batch_labels = image_reader.get_eval_batch(PATH_EVAL, BATCH_SIZE)
 
-    logits = model.inference(test_batch_images, 4)
+    logits = model.inference(test_batch_images, 4, 1)
     accuracy = model.accuracy(logits, test_batch_labels)
 
     saver = tf.train.Saver()
