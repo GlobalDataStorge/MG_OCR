@@ -11,7 +11,7 @@ PATH_EVAL = "data/test"
 PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
 
-BATCH_SIZE = 20
+BATCH_SIZE = 100
 
 if __name__ == '__main__':
     test_batch_images, test_batch_labels = image_reader.get_eval_batch(PATH_EVAL, BATCH_SIZE)
