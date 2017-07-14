@@ -11,7 +11,8 @@ def get_train_batch(path, image_width=100, image_height=100, batch_size=100, num
     for file_name in os.listdir(path):
         if file_name.endswith(".jpg"):
             images.append(os.path.join(path, file_name))
-            rotate = int(file_name.split(".")[0].split("_")[-1])
+            # rotate = int(file_name.split(".")[0].split("_")[-1])
+            rotate = 1
             labels.append(rotate)
 
     # shuffle data

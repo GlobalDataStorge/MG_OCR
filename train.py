@@ -6,10 +6,11 @@ import tensorflow as tf
 import image_reader
 import model
 
-# PATH_TRAIN = "image"
-PATH_TRAIN = "data/train"
-PATH_SUMMARY = "log/summary"
-PATH_MODEL = "log/model_dog&cat"
+PATH_TRAIN = "image"
+# PATH_TRAIN = "data/train"
+PATH_SUMMARY = "log/summary1"
+# PATH_MODEL = "log/model_dog&cat"
+PATH_MODEL = "log/model"
 
 IMAGE_WIDTH = 100
 IMAGE_HEIGHT = 100
@@ -52,10 +53,10 @@ if __name__ == '__main__':
                     # print(prediction.eval())
                     # print((train_batch_images[0:5]).eval())
                     print("Time %s, Step %d, Loss %f Accuracy %f" % (datetime.datetime.now(), step, loss_value, accuracy_value))
-                if step % 30 == 0:
+                if step % 300 == 0:
                     summary_result = sess.run(summary)
                     summary_writer.add_summary(summary_result, step)
-                if step % 50 == 0 or step == step_count:
+                if step % 500 == 0 or step == step_count:
                     saver.save(sess, os.path.join(PATH_MODEL, "model"), step)
         except tf.errors.OutOfRangeError as e:
             print("Error %s" % str(e))
