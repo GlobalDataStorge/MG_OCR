@@ -7,7 +7,7 @@ import image_reader
 import model
 
 # PATH_TRAIN = "image"
-PATH_TRAIN = "data/train"
+PATH_TRAIN = "data/train_"
 PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
 
@@ -15,7 +15,8 @@ IMAGE_WIDTH = 100
 IMAGE_HEIGHT = 100
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 100
-ITERATOR = 50  # total *400 step
+ITERATOR = 10  # step = ITERATOR * TOTAL_IMAGE_COUNT / BATCH_SIZE
+TOTAL_IMAGE_COUNT = 1e5
 
 if __name__ == '__main__':
     train_batch_images, train_batch_labels = image_reader.get_train_batch(
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     train = model.train(loss, LEARNING_RATE)
 
     summary = tf.summary.merge_all()
-    summary_writer = tf.summary.FileWriter(PATH_SUMMARY)
+    summary_writer = tf.summary.FileWriter(PATH_SUMMARY, tf.get_default_graph())
     saver = tf.train.Saver()
 
     with tf.Session() as sess:
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         threads = tf.train.start_queue_runners(sess, coord)
         try:
             print("Start train...")
-            step_count = int(ITERATOR * 40000 / BATCH_SIZE)
+            step_count = int(ITERATOR * TOTAL_IMAGE_COUNT / BATCH_SIZE)
             for step in range(1, step_count + 1):
                 train.run()
                 if step % 10 == 0 or step == 1:

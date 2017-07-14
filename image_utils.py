@@ -1,4 +1,6 @@
 # coding=utf-8
+import multiprocessing
+
 import PIL.Image
 import os
 
@@ -23,10 +25,25 @@ def rotate(im, label):
     return im
 
 
-PATH_ORIGIN = "/Users/zijiao/Documents/WorkSpace/PyCharm/Dogs&Cats/data/test"
-PATH_SAVE = "data/test"
+def handle_image(image_path):
+    file_name = image_path.split("/")[-1]
+    im = PIL.Image.open(image_path)
+    im = resize(im, IMAGE_SIZE)
+    for i in range(4):
+        im = rotate(im, i)
+        split = file_name.split(".")
+        new_file_name = "%s_%d.%s" % ("".join(split[:-1]), i, split[-1])
+        save_file_path = os.path.join(PATH_SAVE, new_file_name)
+        im.save(save_file_path)
+    pass
+
+
+PATH_ORIGIN = "/Users/zijiao/Documents/WorkSpace/PyCharm/Dogs&Cats/data/train"
+PATH_SAVE = "data/train_"
 IMAGE_SIZE = 100
 MAX_COUNT = -1
+
+pool = multiprocessing.Pool(10)
 
 if __name__ == '__main__':
     if not os.path.exists(PATH_ORIGIN):
@@ -39,13 +56,11 @@ if __name__ == '__main__':
         if i == MAX_COUNT:
             break
         file_path = os.path.join(PATH_ORIGIN, file_name)
+
+        pool.map_async(handle_image, [file_path])
+        # handle_image(file_path)
         print "Progress %.2f%% Handle image %s" % (float(i + 1) * 100 / count, file_name)
-        im = PIL.Image.open(file_path)
-        im = resize(im, IMAGE_SIZE)
-        for i in range(4):
-            im = rotate(im, i)
-            split = file_name.split(".")
-            new_file_name = "%s_%d.%s" % (split[0], i, split[1])
-            save_file_path = os.path.join(PATH_SAVE, new_file_name)
-            im.save(save_file_path)
+
+    pool.close()
+    pool.join()
     print "Handle completed."
