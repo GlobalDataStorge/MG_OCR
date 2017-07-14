@@ -6,7 +6,7 @@ import tensorflow as tf
 import image_reader
 import model
 
-# PATH_TRAIN = "image"
+# PATH_EVAL = "data/train"
 PATH_EVAL = "data/test"
 PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
