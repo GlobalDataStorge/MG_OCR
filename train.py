@@ -16,7 +16,7 @@ IMAGE_HEIGHT = 100
 LEARNING_RATE = 1e-3
 BATCH_SIZE = 100
 ITERATOR = 10  # step = ITERATOR * TOTAL_IMAGE_COUNT / BATCH_SIZE
-TOTAL_IMAGE_COUNT = 1e5
+TOTAL_IMAGE_COUNT = 1.4e5
 
 if __name__ == '__main__':
     train_batch_images, train_batch_labels = image_reader.get_train_batch(
@@ -46,17 +46,17 @@ if __name__ == '__main__':
             step_count = int(ITERATOR * TOTAL_IMAGE_COUNT / BATCH_SIZE)
             for step in range(1, step_count + 1):
                 train.run()
-                if step % 10 == 0 or step == 1:
+                if step % 50 == 0 or step == 1 or step == step_count:
                     prediction = tf.argmax(logits, 1)
                     loss_value, accuracy_value = sess.run([loss, accuracy])
                     # print(train_batch_labels.eval())
                     # print(prediction.eval())
                     # print((train_batch_images[0:5]).eval())
                     print("Time %s, Step %d, Loss %f Accuracy %f" % (datetime.datetime.now(), step, loss_value, accuracy_value))
-                if step % 30 == 0:
+                if step % 100 == 0 or step == step_count:
                     summary_result = sess.run(summary)
                     summary_writer.add_summary(summary_result, step)
-                if step % 50 == 0 or step == step_count:
+                if step % 200 == 0 or step == step_count:
                     saver.save(sess, os.path.join(PATH_MODEL, "model"), step)
         except tf.errors.OutOfRangeError as e:
             print("Error %s" % str(e))

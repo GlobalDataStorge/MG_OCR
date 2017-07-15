@@ -12,6 +12,7 @@ PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
 
 BATCH_SIZE = 100
+TOTAL_IMAGE_COUNT = 10000
 
 if __name__ == '__main__':
     test_batch_images, test_batch_labels = image_reader.get_eval_batch(PATH_EVAL, BATCH_SIZE)
@@ -31,7 +32,7 @@ if __name__ == '__main__':
         threads = tf.train.start_queue_runners(sess, coord)
         try:
             print("Start eval...")
-            step_count = int(1000 / BATCH_SIZE)
+            step_count = int(TOTAL_IMAGE_COUNT / BATCH_SIZE)
             accuracy_total = []
             for step in range(step_count):
                 accuracy_value = accuracy.eval()
