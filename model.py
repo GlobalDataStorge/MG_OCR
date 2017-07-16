@@ -37,7 +37,7 @@ def batch_norm(x):
 def inference(images, n_classes, keep_prob):
     tf.summary.image("images", images)
     images_stream = images
-    conv_layer = [32, 64]
+    conv_layer = [32, 64, 64]
     current_layer = int(images.get_shape()[3])
     for next_conv_layer in conv_layer:
         W_conv = weight_variables([5, 5, current_layer, next_conv_layer])
@@ -51,7 +51,7 @@ def inference(images, n_classes, keep_prob):
     batch_size = int(images.get_shape()[0])
     images_stream = tf.reshape(images_stream, [batch_size, -1])
     current_input_num = int(images_stream.get_shape()[-1])
-    fc_layer = [512, 512, n_classes]
+    fc_layer = [512, 1024, n_classes]
     for i, next_fc_layer in enumerate(fc_layer):
         W_fc = weight_variables([current_input_num, next_fc_layer])
         current_input_num = next_fc_layer
