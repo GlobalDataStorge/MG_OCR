@@ -30,8 +30,8 @@ def get_train_batch(path, image_width=100, image_height=100, batch_size=100, num
     # image = tf.image.resize_image_with_crop_or_pad(image, image_height, image_width)
     # image = tf.image.resize_images(image, (image_height, image_width))
     image = tf.random_crop(image, [image_height, image_width, 3])
-    image = tf.image.rgb_to_grayscale(image)
-    image = tf.image.random_flip_left_right(image)
+    # image = tf.image.rgb_to_grayscale(image)
+    # image = tf.image.random_flip_left_right(image)
     # image = tf.image.random_brightness(image, max_delta=63)
     image = tf.image.random_contrast(image, lower=0.2, upper=1.8)
     if standardization:
@@ -66,8 +66,8 @@ def get_eval_batch(path, batch_size):
     queue = tf.train.slice_input_producer([images, labels])
     image_data = tf.read_file(queue[0])
     image = tf.image.decode_jpeg(image_data, channels=3)
-    image = tf.image.resize_images(image, (100, 100))
-    image = tf.image.rgb_to_grayscale(image)
+    image = tf.image.resize_image_with_crop_or_pad(image, 100, 100)
+    # image = tf.image.rgb_to_grayscale(image)
     image = tf.image.per_image_standardization(image)
     label = queue[1]
     batch_image, batch_label = tf.train.batch([image, label], batch_size, 64, 1000)

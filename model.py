@@ -6,7 +6,7 @@ def weight_variables(shape):
 
 
 def biases_variables(shape):
-    return tf.Variable(tf.constant(0.1, shape=shape))
+    return tf.Variable(tf.constant(0.01, shape=shape))
 
 
 def conv2d(x, W, b, strides, activation=tf.nn.relu):
@@ -37,15 +37,15 @@ def batch_norm(x):
 def inference(images, n_classes, keep_prob):
     tf.summary.image("images", images)
     images_stream = images
-    conv_layer = [32, 32]
+    conv_layer = [32, 64]
     current_layer = int(images.get_shape()[3])
     for next_conv_layer in conv_layer:
         W_conv = weight_variables([5, 5, current_layer, next_conv_layer])
         b_conv = biases_variables([next_conv_layer])
-        h_conv = conv2d(images_stream, W_conv, b_conv, [1, 1, 1, 1])
+        h_conv = conv2d(images_stream, W_conv, b_conv, [1, 2, 2, 1])
         images_stream = max_pool(h_conv, [1, 2, 2, 1], [1, 2, 2, 1])
-        images_stream = tf.nn.lrn(images_stream, depth_radius=4, bias=1.0, alpha=0.001 / 9.0,
-                                  beta=0.75)
+        # images_stream = tf.nn.lrn(images_stream, depth_radius=4, bias=1.0, alpha=0.001 / 9.0,
+        #                           beta=0.75)
         current_layer = next_conv_layer
 
     batch_size = int(images.get_shape()[0])
