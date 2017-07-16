@@ -6,7 +6,6 @@ import tensorflow as tf
 import image_reader
 import model
 
-# PATH_TRAIN = "image"
 PATH_TRAIN = "data/train_"
 # PATH_TRAIN = "data/params"
 PATH_SUMMARY = "log/summary"
@@ -55,7 +54,7 @@ if __name__ == '__main__':
                     # print(prediction.eval())
                     # print((train_batch_images[0:5]).eval())
                     print("Time %s, Step %d, Loss %f Accuracy %f" % (datetime.datetime.now(), step, loss_value, accuracy_value))
-                if step % 50 == 0 or step == step_count:
+                if step % 50 == 0 or step == 1 or step == step_count:
                     summary_result = sess.run(summary)
                     summary_writer.add_summary(summary_result, step)
                 if step % 100 == 0 or step == step_count:
