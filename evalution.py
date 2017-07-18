@@ -11,7 +11,7 @@ PATH_EVAL = "data/test"
 PATH_SUMMARY = "log/summary"
 PATH_MODEL = "log/model_dog&cat"
 
-BATCH_SIZE = 200
+BATCH_SIZE = 100
 TOTAL_IMAGE_COUNT = 10000
 
 if __name__ == '__main__':
