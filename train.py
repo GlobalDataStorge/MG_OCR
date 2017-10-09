@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 if step % 50 == 0 or step == 1 or step == step_count:
                     summary_result = sess.run(summary)
                     summary_writer.add_summary(summary_result, step)
-                if step % 100 == 0 or step == step_count:
+                if step % 10000 == 0 or step == step_count:
                     saver.save(sess, os.path.join(PATH_MODEL, "model"), step)
         except tf.errors.OutOfRangeError as e:
             print("Error %s" % str(e))

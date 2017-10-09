@@ -34,15 +34,37 @@ def batch_norm(x):
     return x
 
 
+# this is a simpler version of Tensorflow's 'official' version. See:
+# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/contrib/layers/python/layers/layers.py#L102
+def batch_norm_wrapper(inputs, is_training=True, decay=0.999):
+    scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
+    beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
+    pop_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
+    pop_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
+    epsilon = 1e-3
+    if is_training:
+        batch_mean, batch_var = tf.nn.moments(inputs, [0])
+        train_mean = tf.assign(pop_mean,
+                               pop_mean * decay + batch_mean * (1 - decay))
+        train_var = tf.assign(pop_var,
+                              pop_var * decay + batch_var * (1 - decay))
+        with tf.control_dependencies([train_mean, train_var]):
+            return tf.nn.batch_normalization(inputs,
+                                             batch_mean, batch_var, beta, scale, epsilon)
+    else:
+        return tf.nn.batch_normalization(inputs,
+                                         pop_mean, pop_var, beta, scale, epsilon)
+
+
 def inference(images, n_classes, keep_prob):
     tf.summary.image("images", images)
     images_stream = images
     conv_layer = [64, 128, 256, 256]
     current_layer = int(images.get_shape()[3])
-    for next_conv_layer in conv_layer:
+    for i, next_conv_layer in enumerate(conv_layer):
         W_conv = weight_variables([5, 5, current_layer, next_conv_layer])
         b_conv = biases_variables([next_conv_layer])
-        h_conv = conv2d(images_stream, W_conv, b_conv, [1, 1, 1, 1])
+        h_conv = conv2d(images_stream, W_conv, b_conv, [1, 2, 2, 1])
         images_stream = max_pool(h_conv, [1, 2, 2, 1], [1, 2, 2, 1])
         # images_stream = tf.nn.lrn(images_stream, depth_radius=4, bias=1.0, alpha=0.001 / 9.0,
         #                           beta=0.75)
@@ -60,7 +82,8 @@ def inference(images, n_classes, keep_prob):
         if i != len(fc_layer) - 1:
             images_stream = tf.nn.relu(images_stream)
             # images_stream = tf.nn.dropout(images_stream, keep_prob)
-            images_stream = batch_norm(images_stream)
+            # images_stream = batch_norm(images_stream)
+            images_stream = batch_norm_wrapper(images_stream)
     return images_stream
 
 
